@@ -136,19 +136,6 @@ Devices Table
 
 
 
- **Installation \& Setup**
-
-
-
-&nbsp;Clone Repository
-
-
-
-```bash
-
-git clone https://github.com/YOUR\_USERNAME/iot-device-monitoring.git
-
-cd iot-device-monitoring
 
 
 
