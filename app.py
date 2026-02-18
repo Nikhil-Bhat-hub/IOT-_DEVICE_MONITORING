@@ -5,10 +5,6 @@ import plotly.express as px
 import numpy as np
 from sklearn.ensemble import IsolationForest
 from datetime import datetime
-# -------------------------------
-# DATABASE CONNECTION
-# -------------------------------
-
 def get_connection():
     return mysql.connector.connect(
         host="localhost",
@@ -16,17 +12,11 @@ def get_connection():
         password="Nikhil@2005",
         database="iot_monitoring"
     )
-
-# -------------------------------
-# FETCH DATA
-# -------------------------------
-
 def fetch_devices():
     conn = get_connection()
     df = pd.read_sql("SELECT * FROM devices", conn)
     conn.close()
     return df
-
 def insert_device(data):
     conn = get_connection()
     cursor = conn.cursor()
@@ -38,21 +28,11 @@ def insert_device(data):
     cursor.execute(query, data)
     conn.commit()
     conn.close()
-
-# -------------------------------
-# STREAMLIT UI
-# -------------------------------
-
 st.set_page_config(page_title="IoT Monitoring Platform", layout="wide")
 
 st.title("IoT Device Monitoring & KPI Analytics Platform")
 
 menu = st.sidebar.selectbox("Menu", ["Dashboard", "Add Device", "AI Anomaly Detection"])
-
-# -------------------------------
-# DASHBOARD
-# -------------------------------
-
 if menu == "Dashboard":
     df = fetch_devices()
 
@@ -76,11 +56,6 @@ if menu == "Dashboard":
 
     else:
         st.warning("No devices found.")
-
-# -------------------------------
-# ADD DEVICE
-# -------------------------------
-
 elif menu == "Add Device":
     st.subheader("Add New Device")
 
@@ -103,11 +78,6 @@ elif menu == "Add Device":
             datetime.combine(last_active, datetime.min.time())
         ))
         st.success("Device Added Successfully!")
-
-# -------------------------------
-# AI ANOMALY DETECTION
-# -------------------------------
-
 elif menu == "AI Anomaly Detection":
     st.subheader("AI-Based Device Anomaly Detection")
 
@@ -137,3 +107,4 @@ elif menu == "AI Anomaly Detection":
         st.warning("Need at least 3 devices for AI detection.")
 
        
+
