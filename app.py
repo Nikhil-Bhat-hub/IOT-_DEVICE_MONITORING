@@ -1,36 +1,50 @@
 import streamlit as st
-import mysql.connector
+import sqlite3
 import pandas as pd
 import plotly.express as px
 import numpy as np
 from sklearn.ensemble import IsolationForest
 from datetime import datetime
 def get_connection():
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="Nikhil@2005",
-        database="iot_monitoring"
-    )
+    conn = sqlite3.connect("iot_monitoring.db")
+    return conn
+def create_table():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS devices (
+            device_id TEXT PRIMARY KEY,
+            device_name TEXT,
+            location TEXT,
+            status TEXT,
+            signal_strength INTEGER,
+            data_usage_mb REAL,
+            last_active TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+create_table()
 def fetch_devices():
     conn = get_connection()
     df = pd.read_sql("SELECT * FROM devices", conn)
     conn.close()
     return df
+
 def insert_device(data):
     conn = get_connection()
     cursor = conn.cursor()
-    query = """
-    INSERT INTO devices 
-    (device_id, device_name, location, status, signal_strength, data_usage_mb, last_active)
-    VALUES (%s,%s,%s,%s,%s,%s,%s)
-    """
-    cursor.execute(query, data)
+    cursor.execute("""
+        INSERT INTO devices
+        (device_id, device_name, location, status, signal_strength, data_usage_mb, last_active)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, data)
     conn.commit()
     conn.close()
 st.set_page_config(page_title="IoT Monitoring Platform", layout="wide")
 
-st.title("IoT Device Monitoring & KPI Analytics Platform")
+st.title("🚀 IoT Device Monitoring & KPI Analytics Platform")
 
 menu = st.sidebar.selectbox("Menu", ["Dashboard", "Add Device", "AI Anomaly Detection"])
 if menu == "Dashboard":
@@ -43,19 +57,19 @@ if menu == "Dashboard":
         col2.metric("Active Devices", len(df[df["status"]=="ACTIVE"]))
         col3.metric("Faulty Devices", len(df[df["status"]=="FAULTY"]))
 
-        st.subheader("Data Usage Trend")
+        st.subheader("📊 Data Usage Trend")
         fig = px.bar(df, x="device_id", y="data_usage_mb")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
-        st.subheader("Device Status Distribution")
+        st.subheader("📈 Device Status Distribution")
         fig2 = px.pie(df, names="status")
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width="stretch")
 
-        st.subheader("Device Table")
+        st.subheader("📋 Device Table")
         st.dataframe(df)
 
     else:
-        st.warning("No devices found.")
+        st.warning("No devices found. Add some devices.")
 elif menu == "Add Device":
     st.subheader("Add New Device")
 
@@ -75,20 +89,19 @@ elif menu == "Add Device":
             status,
             signal_strength,
             data_usage,
-            datetime.combine(last_active, datetime.min.time())
+            str(last_active)
         ))
         st.success("Device Added Successfully!")
 elif menu == "AI Anomaly Detection":
-    st.subheader("AI-Based Device Anomaly Detection")
+    st.subheader("🤖 AI-Based Device Anomaly Detection")
 
     df = fetch_devices()
 
     if len(df) > 2:
         features = df[["signal_strength", "data_usage_mb"]]
 
-        model = IsolationForest(contamination=0.2)
+        model = IsolationForest(contamination=0.2, random_state=42)
         df["anomaly"] = model.fit_predict(features)
-
         df["anomaly"] = df["anomaly"].map({1: "Normal", -1: "Anomaly"})
 
         st.dataframe(df[["device_id", "signal_strength", "data_usage_mb", "anomaly"]])
@@ -101,10 +114,7 @@ elif menu == "AI Anomaly Detection":
             hover_data=["device_id"]
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     else:
         st.warning("Need at least 3 devices for AI detection.")
-
-       
-
