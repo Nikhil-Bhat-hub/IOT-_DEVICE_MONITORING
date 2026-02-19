@@ -1,4 +1,5 @@
  **IoT Device Monitoring \& KPI Analytics Platform**
+ 
 An AI-powered IoT device monitoring system that tracks device performance, visualizes KPIs, and detects anomalies using Machine Learning.
 
 Built using Python, Streamlit, MySQL, Plotly, and Scikit-learn.
@@ -8,6 +9,7 @@ Built using Python, Streamlit, MySQL, Plotly, and Scikit-learn.
 This project simulates a real world IoT monitoring platform similar to enterprise solutions used in telecom and device management industries.
 
 The system allows:
+
 \- Monitoring connected devices
 
 \- Tracking operational KPIs
@@ -17,6 +19,7 @@ The system allows:
 \- Detecting anomalies using AI
 
  **Tech Stack**
+ 
 \- Backend: Python
 \- Database: MySQL
 \- Dashboard: Streamlit
@@ -25,12 +28,14 @@ The system allows:
 \- Data Processing: Pandas, NumPy
 
 **Key Features**
+
 &nbsp;Device Management
 \- Add new IoT devices
 \- Track device location, signal strength, and data usage
 \- Monitor device status (Active / Inactive / Faulty)
 
 KPI Dashboard
+
 \- Total Devices
 \- Active Devices
 \- Faulty Devices
@@ -38,12 +43,15 @@ KPI Dashboard
 \- Status Distribution Pie Chart
 
 AI Anomaly Detection
+
 \- Uses Isolation Forest algorithm
 \- Detects abnormal signal strength and data usage
 \- Visualizes anomalies using interactive charts
 
 **Database Schema**
+
 Devices Table
+
 | Column | Type |
 |--------|------|
 | device\_id | VARCHAR |
@@ -53,6 +61,7 @@ Devices Table
 | signal\_strength | INT |
 | data\_usage\_mb | FLOAT |
 | last\_active | DATETIME |
+
 
 
 
